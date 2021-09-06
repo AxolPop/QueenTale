@@ -1,0 +1,183 @@
+{
+	"frames": [
+		{
+			"filename": "buttonEast.png",
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 860,
+				"h": 900
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 860,
+				"h": 900
+			},
+			"sourceSize": {
+				"w": 860,
+				"h": 900
+			}
+		},
+		{
+			"filename": "buttonNorth.png",
+			"frame": {
+				"x": 863,
+				"y": 1,
+				"w": 860,
+				"h": 900
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 860,
+				"h": 900
+			},
+			"sourceSize": {
+				"w": 860,
+				"h": 900
+			}
+		},
+		{
+			"filename": "buttonSouth.png",
+			"frame": {
+				"x": 1725,
+				"y": 1,
+				"w": 860,
+				"h": 900
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 860,
+				"h": 900
+			},
+			"sourceSize": {
+				"w": 860,
+				"h": 900
+			}
+		},
+		{
+			"filename": "buttonWest.png",
+			"frame": {
+				"x": 2587,
+				"y": 1,
+				"w": 860,
+				"h": 900
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 860,
+				"h": 900
+			},
+			"sourceSize": {
+				"w": 860,
+				"h": 900
+			}
+		},
+		{
+			"filename": "textbuttonEast.png",
+			"frame": {
+				"x": 3449,
+				"y": 1,
+				"w": 860,
+				"h": 900
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 860,
+				"h": 900
+			},
+			"sourceSize": {
+				"w": 860,
+				"h": 900
+			}
+		},
+		{
+			"filename": "textbuttonNorth.png",
+			"frame": {
+				"x": 4311,
+				"y": 1,
+				"w": 860,
+				"h": 900
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 860,
+				"h": 900
+			},
+			"sourceSize": {
+				"w": 860,
+				"h": 900
+			}
+		},
+		{
+			"filename": "textbuttonSouth.png",
+			"frame": {
+				"x": 5173,
+				"y": 1,
+				"w": 860,
+				"h": 900
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 860,
+				"h": 900
+			},
+			"sourceSize": {
+				"w": 860,
+				"h": 900
+			}
+		},
+		{
+			"filename": "textbuttonWest.png",
+			"frame": {
+				"x": 6035,
+				"y": 1,
+				"w": 860,
+				"h": 900
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 860,
+				"h": 900
+			},
+			"sourceSize": {
+				"w": 860,
+				"h": 900
+			}
+		}
+	],
+	"meta": {
+		"app": "http://www.codeandweb.com/texturepacker",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 6896,
+			"h": 902
+		},
+		"scale": "1"
+	}
+}

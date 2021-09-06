@@ -1,0 +1,13 @@
+{
+    "files.exclude": {
+        "**/.cs.meta": true,
+        "**/.meta": true,
+        "**/*.meta": true,
+        "/.cs.meta": true,
+        "/.meta": true
+    },
+    "git.ignoreLimitWarning": true,
+    "git.autorefresh": false,
+    "git.enabled": false,
+    "editor.acceptSuggestionOnEnter": "off"
+}

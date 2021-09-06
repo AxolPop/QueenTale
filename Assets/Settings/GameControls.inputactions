@@ -1,0 +1,129 @@
+{
+    "name": "GameControls",
+    "maps": [
+        {
+            "name": "Main Controls",
+            "id": "ab1917c4-c127-4e58-8e59-f9fd6f1bc2c7",
+            "actions": [
+                {
+                    "name": "Turn Camera Left",
+                    "type": "Button",
+                    "id": "70468a1c-53eb-4652-ba26-ea65d66d2a09",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Turn Camera Right",
+                    "type": "Button",
+                    "id": "b8daf8b3-29db-43be-aa37-91affa849c00",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Charge",
+                    "type": "Button",
+                    "id": "ba3130e9-fb25-4f11-ae06-2e3e5b695bfc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "RightStickMove",
+                    "type": "Value",
+                    "id": "f22c5c59-01d2-40cd-a837-3a7feb79d3d8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "a9c06fd1-9127-4f8a-8ac1-c6bf60ed2c47",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Turn Camera Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "842f3a77-05d0-4a06-9373-3c396ce14a10",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Turn Camera Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9a385f03-3602-41ed-9b70-cabd59ea2d29",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Turn Camera Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a4c81b04-17fc-46ea-8296-b48e518f7660",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Turn Camera Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "be79ff66-85d9-4563-bfd3-dfd2a0de4a03",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Main Controls",
+                    "action": "Charge",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2b95afaf-0da4-47db-a23e-d9ca1a90cb18",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Main Controls",
+                    "action": "Charge",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ba5cd9e5-de5e-4bf2-93d3-bca400984d82",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Main Controls",
+                    "action": "RightStickMove",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Main Controls",
+            "bindingGroup": "Main Controls",
+            "devices": []
+        }
+    ]
+}
