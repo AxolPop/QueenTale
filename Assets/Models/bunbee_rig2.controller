@@ -307,7 +307,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.057891805
+  m_TransitionDuration: 0.19526027
   m_TransitionOffset: 0
   m_ExitTime: 0
   m_HasExitTime: 0
@@ -510,9 +510,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.4246714
+  m_TransitionDuration: 0.42467147
   m_TransitionOffset: 0
-  m_ExitTime: 0.74999994
+  m_ExitTime: 0.67010534
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -577,7 +577,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Wander
-  m_Speed: 1
+  m_Speed: 0.8
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 2809301051258526978}
@@ -592,7 +592,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -8810409307069013160, guid: 19c1c46474021804ebb75697e2dfcf8e,
+  m_Motion: {fileID: -2108476173976532896, guid: ed76ef6e792e50848b6ba6c197d9f37b,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 

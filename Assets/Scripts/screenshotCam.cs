@@ -2,6 +2,7 @@
  
  public class screenshotCam : MonoBehaviour
  {
+     public static screenshotCam Instance;
      [SerializeField] float speed = 0.5f;
      [SerializeField] float sensitivity = 1.0f;
  
@@ -13,6 +14,7 @@
  
      private void Awake()
      {
+         Instance = this;
          cam = GetComponent<Camera>();
      }
 
@@ -23,8 +25,8 @@
              camRenderer = !camRenderer;
          }
 
-            Camera.main.enabled = !camRenderer;
-             cam.enabled = camRenderer;
+            cam.enabled = camRenderer;
+            
      }
      
      void FixedUpdate()

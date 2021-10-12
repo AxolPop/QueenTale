@@ -18,6 +18,7 @@ TagManager:
   - talkFunction
   - CursorLol
   - failsafe
+  - jumpSlot
   layers:
   - Default
   - TransparentFX
@@ -25,8 +26,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - ControllerCursor
+  - CursorRadius
   - Ground
   - Player
   - Cursor

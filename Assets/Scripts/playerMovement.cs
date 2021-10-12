@@ -6,6 +6,8 @@ using System.Collections;
 public class playerMovement : MonoBehaviour
 {
 
+    public static playerMovement player_;
+
     public float playerVelocity;
     Vector3 lastPosition;
 
@@ -85,6 +87,7 @@ public class playerMovement : MonoBehaviour
 
     void Awake()
     {
+        player_ = this;
     }
     
     void Start()
@@ -104,57 +107,76 @@ public class playerMovement : MonoBehaviour
     {
     }
 
+    bool isWalking;
+
     void Update()
     {
-        playerVelocity = Vector3.Distance(transform. position, lastPosition) / Time. deltaTime;
-
-        lastPosition = transform.position;
-
-        player = gameObject;
-
-        rotationy = transform.eulerAngles.y;
-
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
-
-        if (direction.magnitude >= 0.1f && troop.isTalking == false)
+        if (system.isPaused)
         {
+            GetComponent<AudioSource>().volume = 0;
+        }
+        else
+        {
+            GetComponent<AudioSource>().volume = PlayerPrefs.GetFloat("Sfx Value");
+        }
 
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+        if (!system.isPaused)
+        {
+            playerVelocity = Vector3.Distance(transform. position, lastPosition) / Time. deltaTime;
 
-            Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            lastPosition = transform.position;
 
-            if (allowMovement == true)
+            player = gameObject;
+
+            rotationy = transform.eulerAngles.y;
+
+            float horizontal = Input.GetAxisRaw("Horizontal");
+            float vertical = Input.GetAxisRaw("Vertical");
+            Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
+
+            if (direction.magnitude >= 0.1f && troop.isTalking == false)
             {
-            controller.Move(moveDir.normalized * speed * Time.deltaTime);
 
-            moving = true;
+                float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
+                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+                transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+                Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+
+                if (allowMovement == true)
+                {
+                controller.Move(moveDir.normalized * speed * Time.deltaTime);
+
+                moving = true;
+                }
+
+                if (!isWalking)
+                GetComponent<AudioSource>().Play();
+
+                isWalking = true;
             }
-        }
-        else { moving = false; }
+            else { moving = false; GetComponent<AudioSource>().Stop(); isWalking = false;}
 
-        //REeset the MoveVector
-        moveVector = Vector3.zero;
+            //REeset the MoveVector
+            moveVector = Vector3.zero;
 
-        //Check if cjharacter is grounded
-        if (controller.isGrounded == false)
-        {
-            //Add our gravity Vecotr
-            moveVector += Physics.gravity;
-        }
+            //Check if cjharacter is grounded
+            if (controller.isGrounded == false)
+            {
+                //Add our gravity Vecotr
+                moveVector += Physics.gravity;
+            }
 
-        //Apply our move Vector , remeber to multiply by Time.delta
-        controller.Move(moveVector * Time.deltaTime);
+            //Apply our move Vector , remeber to multiply by Time.delta
+            controller.Move(moveVector * Time.deltaTime);
 
-        health();
+            health();
 
-        if (playerHealth <= 0)
-        {
-            troop.troopIndex.Clear();
-            SceneManager.LoadScene("SampleScene");
+            if (playerHealth <= 0)
+            {
+                troop.troopIndex.Clear();
+                SceneManager.LoadScene("SampleScene");
+            }
         }
     }
 

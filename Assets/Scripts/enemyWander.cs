@@ -11,7 +11,9 @@ public class enemyWander : MonoBehaviour
 {
     public List<GameObject> troopToEnemySlots = new List<GameObject>();
     public bool troopEnemyID;
+    public bool canJoinJumpSlot;
     public List<GameObject> slotList = new List<GameObject>();
+    public List<GameObject> jumpSlotList = new List<GameObject>();
 
     public NavMeshAgent ai;
 
@@ -90,6 +92,8 @@ public class enemyWander : MonoBehaviour
 
     enemyHole objectHole;
 
+    public ParticleSystem angrySteam;
+
     void Start()
     {
         if (isHole)
@@ -109,7 +113,7 @@ public class enemyWander : MonoBehaviour
         {
             animator = transform.Find("Rig").GetComponent<Animator>();
             visuallol = transform.Find("Rig/Smoke Poof").GetComponent<VisualEffect>();
-
+            angrySteam = GetComponent<ParticleSystem>();
         }
 
         distancetoCursor = 3.5f;
@@ -178,6 +182,8 @@ public class enemyWander : MonoBehaviour
                 Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
                 ai.SetDestination(newPos);
                 timer = 0;
+
+                wanderTimer = Random.Range(8, 13);
             }
 
             if (beingAttacked == true && !isObstacle)
@@ -260,7 +266,7 @@ public class enemyWander : MonoBehaviour
             animator.SetBool("preparing", false);
         }
 
-        if (health < 1 && a == true)
+        if (health < 0 && a == true)
         {
             StartCoroutine(yourmom());
         }
@@ -290,6 +296,7 @@ public class enemyWander : MonoBehaviour
         Debug.Log("Death");
         if (!isObstacle)
         {
+            if (GetComponent<ParticleSystem>().isPlaying) GetComponent<ParticleSystem>().Stop();
             a = false;
             ai.enabled = false;
             ai.updatePosition= false;
@@ -312,6 +319,7 @@ public class enemyWander : MonoBehaviour
         }
         else if (isSign)
         {
+            objectData.GetObjectData.destroyedObstacles.Add(gameObject);
             a = false;
             visuallol.Play();
             yield return new WaitForSeconds(2);
@@ -322,21 +330,26 @@ public class enemyWander : MonoBehaviour
         }
         else if (!isSign)
         {
+            objectData.GetObjectData.destroyedObstacles.Add(gameObject);
             a = false;
             isDead = true;
 
-            Kill();
+            troopToEnemySlots.Clear();
 
-            while (!save)
-            {
-                yield return null;
-            }
+            Kill();
 
             gameObject.SetActive(false);
         }
 
              
     }
+
+    public void remove()
+    {
+        StartCoroutine(yourmom());
+    }
+
+
 
     //Wandering
     public static Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask)
@@ -360,9 +373,11 @@ public class enemyWander : MonoBehaviour
         {
             Debug.LogError("Attacking " + e++);
             canAttack = false;
+            angrySteam.Play();
             yield return new WaitForSeconds(1);
-            animator.SetBool("preparing", true);
+            animator.SetBool("preparing", true);      
             yield return new WaitForSeconds(3.5f);
+            angrySteam.Stop();
 
             hitColliders = Physics.OverlapSphere(transform.position, 2.5f, mask);
 
@@ -418,49 +433,7 @@ public class enemyWander : MonoBehaviour
 
     public bool save;
 
-    public void Save()
-    {
-        if (PlayerPrefs.HasKey(gameObject.name + "isDead"))
-        {
-            PlayerPrefs.DeleteKey(gameObject.name + "isDead");
-        }
-
-        if (isObstacle)
-        {
-            if (isDead)
-            {
-                save = true;
-                PlayerPrefs.SetInt(gameObject.name + "isDead", 1);
-
-                PlayerPrefs.Save();
-            }
-        }
-    }
-
-    public void Load()
-    {
-        if (PlayerPrefs.GetInt(gameObject.name + "isDead") == 1 && isObstacle)
-        {
-            StartCoroutine(yourmom());
-        }
-    }
-
     public int troopAmount;
 
     GameObject targetSelection;
-
-    public Vector3 GetPositon()
-    {
-        if (isSign)
-        {
-            targetSelection = targetPosition;
-        }
-        else
-        {
-            targetSelection = gameObject;
-        }
-
-        float angle =  currentTroops * Mathf.PI * 2f / troopAmount;
-        return targetSelection.transform.position + new Vector3(Mathf.Cos(angle) * 1, 0, Mathf.Sin(angle) * 1);
-    }
 }

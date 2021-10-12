@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class slotManager : MonoBehaviour
 {
@@ -28,5 +29,14 @@ public class slotManager : MonoBehaviour
     {
         slots = slotPrivate;
         troops = troop.troopIndex;
+
+        if (troop.troopIndex.Count > 12)
+        {
+            troop.troopIndex.RemoveAt(12);
+        }
+
+        
+        troop.troopIndex = troop.troopIndex.Distinct().ToList();
+
     }
 }

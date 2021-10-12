@@ -9,6 +9,12 @@ using TMPro;
 
 public class troop : MonoBehaviour
 {
+    public static troop Instance;
+
+    public Material aiEnabled;
+
+    public Material aiDisabled;
+
     public static List<int> troopIndex = new List<int>();
     public static List<GameObject> troopSpawnID = new List<GameObject>();
     public static List<GameObject> troopsTalkingTo = new List<GameObject>();
@@ -158,6 +164,10 @@ public class troop : MonoBehaviour
         }
     }
 
+    public static GameObject foundEnemy;
+    public static enemyWander foundEnemyScript;
+    
+
     public void ClearTroops()
     {
         troopIndex.Remove(troopGetIndex);
@@ -210,8 +220,12 @@ public class troop : MonoBehaviour
 
     public int spawnID;
 
+    public float movementSpeed;
+
     void Awake()
     {
+        Instance = this;
+
         spawnID = spawnTroop.instantateID;
         troopSpawnID.Add(gameObject);
 
@@ -280,256 +294,298 @@ public class troop : MonoBehaviour
     public static GameObject troopAboutToHire;
 
 
+    void FixedUpdate()
+    {
+        
+    }
+
     // Update is called once per frame
     void Update()
     {
-        chargingPublic = charging;
-        stateText = state.ToString();
-
-        health();
-
-        if (Input.GetKeyDown(KeyCode.L))
+        if (!system.isPaused)
         {
-            troopIndex.Clear();
-            troopsTalkingTo.Clear();
-        }
+            chargingPublic = charging;
+            stateText = state.ToString();
 
-        switch (state)
-        {
-            case State.wandering:
+            health();
 
-                if (allowTalk == true)
-                {
-
-                    lmao.enabled = true;
-                    var lookDir = player.transform.position-transform.position;
-                    lookDir.y = 0; // keep only the horizontal direction
-                    transform.rotation = Quaternion.LookRotation(lookDir);        
-                    if (Gamepad.current != null)
-                    {
-                        if (Gamepad.current.buttonEast.wasPressedThisFrame && isTalking == false)
-                        {
-                            setNameInTextBox = troopsName;
-                            isTalking = true;
-                        }
-
-                        if(Gamepad.current.buttonWest.wasPressedThisFrame)
-                        {
-                            Hire();
-                        }
-                    }
-                    else
-                    {
-                        if (Input.GetKeyDown(KeyCode.F) && isTalking == false)
-                        {
-                            talkingToTroop = gameObject;
-                            setNameInTextBox = gameObject.name;
-                            isTalking = true;
-                        }
-
-                        
-                        if(Input.GetMouseButtonDown(1))
-                        {
-                            Hire();
-                        }
-                    }
-                }
-                else
-                {
-                    if (job == "guard")
-                    {
-                    wasWandering = true;
-                    troopFind_ = StartCoroutine(troopFind(15.5f));
-                    }
-
-                    lmao.enabled = false;
-
-                }
-
-                canvas.enabled = false;
-
-                if (allowTalk == true)
-                {
-                    ai.speed = 0;
-                }
-                else
-                {
-                    ai.speed = 3.8f;
-                }
-
-                timer += Time.deltaTime;
-
-                wanderTimer = Random.Range(3, 7);
-
-                if (timer >= wanderTimer && ai.isOnNavMesh)
-                {
-                    Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
-                    ai.SetDestination(newPos);
-                    timer = 0;
-                }
-                break;
-
-            ///////////////////////////////////////
-
-            case State.atKing:
-
-            if (playerMovement.isInDoor == false)
+            if (Input.GetKeyDown(KeyCode.L))
             {
-                lmao.enabled = false;
-                ai.speed = 25;
+                troopIndex.Clear();
+                troopsTalkingTo.Clear();
+            }
 
+            switch (state)
+            {
+                case State.wandering:
 
-                if (!troopIndex.Contains(troopGetIndex))
-                {
-                    state = State.wandering;
-                }
+                cc.enabled = false;
+                GetComponent<CapsuleCollider>().enabled = true;
+                enableAgent();
 
-                troopNumber = slotManager.slots[troopID];
-
-                if (troopNumber == null && troopReturning == false)
-                {
-                    Debug.LogError("what the fuck");
-                    state = State.wandering;
-                    troopIndex.Remove(troopGetIndex);
-                }
-
-                if (troopID < 3 || troopHealth < maxtroopHealth)
-                {
-                    canvas.enabled = true;
-                }
-                else { canvas.enabled = false; }
-
-                if (canGoToKing)
-                {
-                    ai.SetDestination(troopNumber.transform.position);
-                }
-
-                if (Gamepad.current != null)
-                {
-                    if (Gamepad.current.rightTrigger.wasPressedThisFrame || Gamepad.current.buttonSouth.wasPressedThisFrame)
+                    if (allowTalk == true)
                     {
-                        if (canGoToKing && canCharge == true && isTalking == false && troopID == 0)
+
+                        lmao.enabled = true;
+                        var lookDir = player.transform.position-transform.position;
+                        lookDir.y = 0; // keep only the horizontal direction
+                        transform.rotation = Quaternion.LookRotation(lookDir);        
+                        
                         {
-                            Charge();
-                        }
-                    }
-                }
-                else
-                {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        if (canGoToKing && canCharge == true && isTalking == false && troopID == 0)
-                        {
-                            Charge();
-                        }
-                    }
-                }
-
-                if (Gamepad.current != null)
-                {
-                    if (Gamepad.current.buttonNorth.wasPressedThisFrame)
-                    {
-                        troopIndex.Remove(troopGetIndex);
-                        state = State.wandering;
-                    }
-                }
-                else if (Input.GetKeyDown(KeyCode.Backspace))
-                {
-                    troopIndex.Remove(troopGetIndex);
-                    troopIDIndex = 0;
-                    troopGetIndex = 0;
-                    state = State.wandering;
-                }
-                
-
-                if (canCharge == true)
-                {
-                    if (Gamepad.current != null)
-                    {
-                        if (Gamepad.current.dpad.right.wasPressedThisFrame)
-                        {
-                            if (troopID == 0)
+                            if (Input.GetKeyDown(KeyCode.F) && isTalking == false)
                             {
-                                troopIndex.Remove(troopGetIndex);
-                                troopIndex.Add(troopGetIndex);
+                                talkingToTroop = gameObject;
+                                setNameInTextBox = gameObject.name;
+                                isTalking = true;
+                            }
+
+                            
+                            if(Input.GetMouseButtonDown(1))
+                            {
+                                Hire();
                             }
                         }
                     }
                     else
-                    if (Input.GetAxis("Mouse ScrollWheel") > 0f)
                     {
-                        if (troopID == 0)
+                        if (job == "guard")
                         {
-                            troopIndex.Remove(troopGetIndex);
-                            troopIndex.Add(troopGetIndex);
+                            wasWandering = true;
+                            troopFind_ = StartCoroutine(troopFind(15.5f));
+
+                            if (foundEnemy != null)
+                            {
+                                if (Vector3.Distance(foundEnemy.transform.position, transform.position) < 25)
+                                {
+                                    badguy = foundEnemy;
+                                    enemyScript = foundEnemyScript;
+
+                                    broStartAttacking = StartCoroutine(attackingEnemy());
+                                }
+                            }
                         }
+
+                        lmao.enabled = false;
+
                     }
-                    else if(Input.GetAxis("Mouse ScrollWheel") < 0f)
+
+                    canvas.enabled = false;
+
+                    if (allowTalk == true)
                     {
-                        if (troopID == troopIndex.Count - 1)
-                        {
-                            troopIndex.Remove(troopGetIndex);
-                            troopIndex.Insert(0, troopGetIndex);
-                        }
+                        ai.speed = 0;
+                    }
+                    else
+                    {
+                        ai.speed = 3.8f;
                     }
 
+                    timer += Time.deltaTime;
 
-                }
+                    wanderTimer = Random.Range(3, 7);
 
-                troopID = troopIndex.IndexOf(troopGetIndex);
+                    if (timer >= wanderTimer && ai.isOnNavMesh)
+                    {
+                        Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
+                        ai.SetDestination(newPos);
+                        timer = 0;
+                    }
+                    break;
 
+                ///////////////////////////////////////
 
-            }
+                case State.atKing:
+
+                AtKing();
+
+                    break;
+
+                case (State.charging):
 
                 break;
 
-            case (State.charging):
+                case (State.attacking):
+                
+                    break;
 
-            break;
+                case (State.jumping):
 
-            case (State.attacking):
-            
-                break;
+                StopCoroutine(startChargingDude);
+                StopCoroutine(waitABit);
 
-            case (State.jumping):
+                beforeJumpPosition = gameObject.transform.position;
 
-            StopCoroutine(startChargingDude);
-            StopCoroutine(waitABit);
-
-            beforeJumpPosition = gameObject.transform.position;
-
-            if (canJump && !troopReturning)
-            {
-                disableAgent();
-
-                canJump = false;
-                transform.DOJump(lolTarget.position, 5, 1, 0.7f, false).SetEase(Ease.Linear).OnComplete(() =>
+                if (canJump && !troopReturning)
                 {
-                    chargeCheck = false;
-                    troopFind_ = StartCoroutine(troopFind(7f));
+                    disableAgent();
 
-                });{}
+                    canJump = false;
+                    transform.DOJump(lolTarget.position, 5, 1, 0.7f, false).SetEase(Ease.Linear).OnComplete(() =>
+                    {
+                        chargeCheck = false;
+                        troopFind_ = StartCoroutine(troopFind(7f));
+
+                    });{}
+                }
+                break;
             }
-            break;
-        }
 
-        if (unhire && troopID == troopIndex.Count - 1)
+            if (troopIndex.Count > troopMaxTotal)
+            {
+                troopIndex.RemoveRange((int) troopMaxTotal-1, troopIndex.Count-1);
+
+                Debug.Log("Trying to reorganize troops!!!");
+            }
+        }
+    }
+
+    void moveToSlot()
+    {
+        if (!canGoToKing || state != State.atKing || playerMovement.isInDoor)
+        return;
+
+        troopNumber = slotManager.slots[troopID];
+    }
+
+    void moveToSlott(GameObject destination)
+    {
+        var cc = GetComponent<CharacterController>();
+        var offset = destination.transform.position - transform.position;
+
+        var lookDir = destination.transform.position-transform.position;
+        lookDir.y = 0; // keep only the horizontal direction
+        transform.rotation = Quaternion.LookRotation(lookDir);    
+        //Get the difference.
+        if (offset.magnitude > .1f)
         {
-            Debug.Log("UnHire, removed " + gameObject.name);
-            troopIndex.Remove(troopGetIndex);
-            troopID = -1;
-            state = State.wandering;
-
-            allowTalk = false;
-            troopsTalkingTo.Remove(troopAboutToHire);
-            troopAboutToHire.GetComponent<troop>().troopGetIndex = troopIDIndex;
-            troopAboutToHire.GetComponent<troop>().state = State.atKing;
-            troopIndex.Add(troopAboutToHire.GetComponent<troop>().troopGetIndex);
-            troopAboutToHire.GetComponent<troop>().troopID = troopIndex.IndexOf(troopAboutToHire.GetComponent<troop>().troopGetIndex);
-
-            troopAboutToHire = null;
-            unhire = false;
+            //If we're further away than .1 unit, move towards the target.
+            offset = destination.transform.position - transform.position;
+            offset = offset.normalized * movementSpeed;
+            //normalize it and account for movement speed.
+            cc.Move(new Vector3(offset.x, -0.01f, offset.z) * Time.deltaTime);
+            //actually move the character.
         }
+
+        useGravity();
+    }
+
+    public float timer_;
+
+    void AtKing()
+    {
+        if (playerMovement.isInDoor)
+        return;
+
+        lmao.enabled = false;
+        ai.speed = 25;
+
+
+        if (!troopIndex.Contains(troopGetIndex))
+        {
+            state = State.wandering;
+        }
+
+        moveToSlot();
+
+        distanceFromSlot = Vector3.Distance(gameObject.transform.position, troopNumber.transform.position);
+
+        if (distanceFromSlot > 30 || ai.isOnOffMeshLink)
+        {
+            timer_ += 1;
+        }
+        else
+        {
+            timer_ = 0;
+        }
+
+        if (timer_ > 200)
+        {
+            ai.Warp(player.transform.position);
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            ai.Warp(player.transform.position);
+        }
+
+        if (distanceFromSlot <= 13)
+        {
+            // troopRenderer.material = aiDisabled;
+
+            disableAgent();
+
+            cc.enabled = true;
+            GetComponent<CapsuleCollider>().enabled = false;
+            Physics.IgnoreLayerCollision(11, 11, true);
+
+            movementSpeed = Random.Range(22.7f, 25.3f);
+
+            cc.radius = 0.3f;
+
+            moveToSlott(troopNumber);
+        }
+        else
+        {
+            // troopRenderer.material = aiEnabled;
+
+            enableAgent();
+
+            cc.enabled = false;
+
+            cc.radius = 0.5f;
+
+            ai.SetDestination(troopNumber.transform.position);
+        }
+
+        if (troopNumber == null && troopReturning == false)
+        {
+            Debug.LogError("what the fuck");
+            state = State.wandering;
+            troopIndex.Remove(troopGetIndex);
+        }
+
+        if (troopID < 3 || troopHealth < maxtroopHealth)
+        {
+            canvas.enabled = true;
+        }
+        else { canvas.enabled = false; }
+
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (canGoToKing && canCharge == true && isTalking == false && troopID == 0)
+                {
+                    Charge();
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            troopIndex.Remove(troopGetIndex);
+            troopIDIndex = 0;
+            troopGetIndex = 0;
+            state = State.wandering;
+        }
+        
+            if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+            {
+                if (troopID == 0)
+                {
+                    troopIndex.Remove(troopGetIndex);
+                    troopIndex.Add(troopGetIndex);
+                }
+            }
+            else if(Input.GetAxis("Mouse ScrollWheel") < 0f)
+            {
+                if (troopID == troopIndex.Count - 1)
+                {
+                    troopIndex.Remove(troopGetIndex);
+                    troopIndex.Insert(0, troopGetIndex);
+                }
+            }
+
+        troopID = troopIndex.IndexOf(troopGetIndex);
     }
 
     public Vector3 beforeJumpPosition;
@@ -662,7 +718,7 @@ public class troop : MonoBehaviour
 
     public IEnumerator returnToPlayer()
     {
-
+        Debug.Log("Returned to player");
         if (troopReturning == false && !wasWandering)
         {
             StopCoroutine(troopFind(0));
@@ -723,17 +779,21 @@ public class troop : MonoBehaviour
             else {enableAgent();}
 
             ai.speed = 25;
-    
-            canCharge = false;
-            distance = 10;
-            distanceFromSlot = 10;
-            while (!canCharge && distanceFromSlot > 1)
+
+            while (Vector3.Distance(transform.position, player.transform.position) > 1.5f)
             {
-                battlin = true;
+                enableAgent();
+
+                cc.enabled = false;
+
+                cc.radius = 0.5f;
+
                 ai.SetDestination(player.transform.position);
-                distanceFromSlot = Vector3.Distance(player.transform.position, transform.position);
+
                 yield return null;
             }
+    
+            canCharge = false;
             canAttack = true;
             canCharge = true;
             canGoToKing = true;
@@ -761,6 +821,12 @@ public class troop : MonoBehaviour
             if (state == State.attacking && !wasWandering)
             {
                 StopCoroutine(broStartAttacking);
+
+                if (enemyScript.troopToEnemySlots.Contains(gameObject))
+                {
+                    enemyScript.troopToEnemySlots.Remove(gameObject);
+                }
+                
                 yield return new WaitForSeconds(1);
                 StartCoroutine(returnToPlayer());
             }
@@ -783,6 +849,7 @@ public class troop : MonoBehaviour
 
     public IEnumerator attackingEnemy()
     { 
+        bool hasUsedJumpSlots = false;
 
         Debug.Log("<color=red>Started Attacking</color>");
 
@@ -798,31 +865,34 @@ public class troop : MonoBehaviour
             StopCoroutine(startChargingDude);
         }
 
-        if (!enemyScript.troopEnemyID)
-        {
-            enemyScript.troopToEnemySlots.Add(gameObject);
+        enemyScript.troopToEnemySlots.Add(gameObject);
 
-            ai.SetDestination(enemyScript.slotList[enemyScript.troopToEnemySlots.IndexOf(gameObject)].transform.position);
+        GameObject slotObject = enemyScript.slotList[enemyScript.troopToEnemySlots.IndexOf(gameObject)];
+
+        if (slotObject.tag == "jumpSlot")
+        {
+            disableAgent();
+            transform.DOJump(slotObject.transform.position, 5, 1, 0.7f, false).SetEase(Ease.Linear);
+            hasUsedJumpSlots = true;
         }
-        else 
+        else
         {
-            Debug.Log("Oops");
-            state = State.charging;
-
-            StartCoroutine(returnToPlayer());
+            ai.SetDestination(slotObject.transform.position);
+            GetComponent<CapsuleCollider>().enabled = true;
         }
+        
 
-        while (enemyScript.health > 0 && !troopReturning)
+        while (enemyScript.health > 0 && !troopReturning && badguy != null)
         {
-            while (Vector3.Distance(transform.position, badguy.transform.position) > 2f && !enemyScript.isObstacle)
+            while (Vector3.Distance(transform.position, badguy.transform.position) > 2f && !enemyScript.isObstacle && !hasUsedJumpSlots)
             {
-                ai.SetDestination(enemyScript.slotList[enemyScript.troopToEnemySlots.IndexOf(gameObject)].transform.position);
-                Debug.Log("Good job, now get closer you fuck");
+                ai.speed = 15;
+                ai.SetDestination(slotObject.transform.position);
                 yield return null;
             }
 
             enemyScript.beingAttacked = true;
-            ai.radius = 0.7f;
+            ai.radius = 0.3f;
             if (enemyScript.isObstacle)
             {
                 yield return new WaitForSeconds(setObstacleDamageSpeed);
@@ -844,14 +914,28 @@ public class troop : MonoBehaviour
             charging = true;
         }
 
-        if (badguy != null)
+        
+
+        if (wasWandering)
         {
-            targetObjectPosition.layer = 0;
+            foundEnemy = null;
+            foundEnemyScript = null;
+            state = State.wandering;
         }
 
-        badguy = null;
+        if (hasUsedJumpSlots)
+        {
+            transform.DOJump(player.transform.position, 5, 1, 0.7f, false).SetEase(Ease.Linear).OnComplete(() =>
+            {
+                hasUsedJumpSlots = false;
+                enableAgent();
+            });{};
+
+        }
 
         yield return new WaitForSeconds(0.5f);
+
+        enemyScript.troopToEnemySlots.Remove(gameObject);
 
         troopFind_ = StartCoroutine(troopFind(5f));
     }
@@ -867,6 +951,7 @@ public class troop : MonoBehaviour
 
         void Bro(float x)
     {
+        if (badguy != null)
          enemyScript.health = x;
     }
 
@@ -941,9 +1026,34 @@ public class troop : MonoBehaviour
     }
 
 
-
     IEnumerator startCharging()
     {
+        var offsetToPlayer = transform.position - playerMovement.player_.transform.position;
+
+        GetComponent<CapsuleCollider>().enabled = true;
+        Physics.IgnoreLayerCollision(11, 11, false);
+
+        while (Vector3.Distance(transform.position, playerMovement.player_.transform.position) > 1f)
+        {
+            if (offsetToPlayer.magnitude > .1f)
+            {
+                //If we're further away than .1 unit, move towards the target.
+                //The minimum allowable tolerance varies with the speed of the object and the framerate. 
+                // 2 * tolerance must be >= moveSpeed / framerate or the object will jump right over the stop.
+                offsetToPlayer = transform.position - playerMovement.player_.transform.position;
+                offsetToPlayer = offsetToPlayer.normalized * moveSpeed * 2;
+                //normalize it and account for movement speed.
+                cc.Move(new Vector3(-offsetToPlayer.x, -0.01f, -offsetToPlayer.z) * Time.deltaTime);
+
+                var lookDir = offsetToPlayer-transform.position;
+                lookDir.y = 0;
+                transform.rotation = Quaternion.LookRotation(lookDir);
+                
+                useGravity();
+            }
+            yield return null;
+        }
+
         troopIndex.Remove(troopGetIndex);
 
         chargeCheck = true;
@@ -969,7 +1079,12 @@ public class troop : MonoBehaviour
                 offset = transform.position - setCursorPosition;
                 offset = offset.normalized * moveSpeed;
                 //normalize it and account for movement speed.
-                cc.Move(-offset * Time.deltaTime);
+                cc.Move(new Vector3(-offset.x, -0.01f, -offset.z) * Time.deltaTime);
+
+                var lookDir = setCursorPosition-transform.position;
+                lookDir.y = 0;
+                transform.rotation = Quaternion.LookRotation(lookDir);
+                
                 useGravity();
             }
 
@@ -1006,11 +1121,15 @@ public class troop : MonoBehaviour
          
         hitColliders = Physics.OverlapSphere(transform.position, searchDistance, mask);
 
+        setObstacleDamageSpeed = 1.3f;
+
         if (hitColliders.Length > 0)
         {
             foreach (var hitCollider in hitColliders)
             {
                 targetObjectPosition = hitCollider.gameObject;
+
+                Physics.IgnoreLayerCollision(11, 11, true);
     
                 badguy = targetObjectPosition.GetComponentInParent<enemyWander>().gameObject;
     
@@ -1018,36 +1137,43 @@ public class troop : MonoBehaviour
     
                 if (badguy != null && !troopReturning)
                 {
-                    if (enemyScript.isSmallWood && canCut)
+                    if (enemyScript.isSmallWood && canCut && !enemyScript.troopEnemyID && !wasWandering)
                     {
                         broStartAttacking = StartCoroutine(attackingEnemy());
                     }
-                    else if (enemyScript.isSign && canBuild)
+                    else if (enemyScript.isSign && canBuild && !enemyScript.troopEnemyID && !wasWandering)
                     {
                         broStartAttacking = StartCoroutine(attackingEnemy());
                     } 
-                    else if (enemyScript.isSmallRock && canCut)
+                    else if (enemyScript.isSmallRock && canCut && !enemyScript.troopEnemyID && !wasWandering)
                     {
                         if (canMine) { setObstacleDamageSpeed = 0.5f; }
                         broStartAttacking = StartCoroutine(attackingEnemy());
                     }
-                    else if (enemyScript.isRock && canMine)
+                    else if (enemyScript.isRock && canMine && !enemyScript.troopEnemyID && !wasWandering)
                     {
                         setObstacleDamageSpeed = 0.5f;
                         broStartAttacking = StartCoroutine(attackingEnemy());
                     }
-                    else if (enemyScript.isHole && canDig)
+                    else if (enemyScript.isHole && canDig && !enemyScript.troopEnemyID && !wasWandering)
                     {
                         if (job == "farmer") {setObstacleDamageSpeed = 0.5f;}
                         broStartAttacking = StartCoroutine(attackingEnemy());
                     }
-                    else if (!enemyScript.isObstacle)
+                    else if (!enemyScript.isObstacle && !enemyScript.troopEnemyID)
                     {
+                        if (wasWandering)
+                        {
+                            foundEnemy = badguy;
+                            foundEnemyScript = enemyScript;
+                        }
 
                         broStartAttacking = StartCoroutine(attackingEnemy());
                     }
-                    else
+                    else if (!wasWandering)
                     {
+                        Debug.Log("gaming");
+                        Physics.IgnoreLayerCollision(11, 11, true);
                         chargeCheck = false;
                         yield return new WaitForSeconds(0.7f);
                         lmfao.enabled = true;
@@ -1056,8 +1182,7 @@ public class troop : MonoBehaviour
                         lmfao.enabled = false;
     
                         StartCoroutine(returnToPlayer());
-    
-                    }   
+                    } 
                 }
             }
         }
@@ -1075,6 +1200,7 @@ public class troop : MonoBehaviour
             }
             else if (state != State.wandering)
             {
+                Debug.Log("awa");
                 StartCoroutine(returnToPlayer());
             }
         }
@@ -1090,30 +1216,6 @@ public class troop : MonoBehaviour
         lmfao.enabled = false;
 
         StartCoroutine(returnToPlayer());
-    }
-
-
-
-    private GameObject findClosestEnemy()
-    {
-        GameObject[] gos;
-        gos = GameObject.FindGameObjectsWithTag("enemy");
-        GameObject closestEnemy = null;
-        float distance = Mathf.Infinity;
-        Vector3 position = transform.position;
-        foreach (GameObject go in gos)
-        {
-            Vector3 diff = go.transform.position - position;
-            float curDistance = diff.sqrMagnitude;
-            if (curDistance < distance)
-            {
-                closestEnemy = go;
-                distance = curDistance;
-            }
-        }
-        nearestEnemy = closestEnemy;
-        getEnemyScript = nearestEnemy.GetComponent<enemyWander>();
-        return closestEnemy;
     }
 
     public static Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask)

@@ -29,7 +29,5 @@ public class faceDirection : MonoBehaviour
 
             gameObject.transform.LookAt(setRotation);
         }
-
-        Cursor.visible = false;
     }
 }

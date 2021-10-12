@@ -7,9 +7,11 @@ using System.Linq;
 
 public class saveSystem : MonoBehaviour
 {
-    void Awake()
-    {
-        savepath = Application.persistentDataPath + "/projectqueen.savedata";
+    public static saveSystem GetSaveSystem;
+    public static int saveSlot;
+
+    private void Awake() {
+        GetSaveSystem = this;
     }
 
     GameObject troopData;
@@ -58,13 +60,15 @@ public class saveSystem : MonoBehaviour
 
     string saveDataSet;
 
-    string savepath;
-
     public tempTimeSystem saveTime;
-    
-    public IEnumerator Save()
+
+    public static string saveLocation(int saveSlot)
     {
-        enemySave();
+        return Application.persistentDataPath + "/queentale" + saveSlot + ".savedata";
+    }
+    
+    public void Save(int loc)
+    {
 
         Debug.Log("Saving Data...");
         saveList = new List<troopData_>();
@@ -110,22 +114,18 @@ public class saveSystem : MonoBehaviour
 
         string output = Rot39(saveDataSet.ToString());
 
-        File.WriteAllText(savepath, output);
+        File.WriteAllText(saveLocation(loc), output);
 
         Debug.Log("Data Successfully Saved!");
-
-        yield return null;
     }
 
     public List<troopData_> loadList;
 
-    public void Load()
+    public void Load(int slot)
     {
-        PlayerPrefs.DeleteKey("loadingData");
+        Debug.Log("Loading Data");
 
-        enemyLoad();
-
-        string readFromData = File.ReadAllText(savepath);
+        string readFromData = File.ReadAllText(saveLocation(slot));
 
         string output = Rot39(readFromData);
 
@@ -203,20 +203,45 @@ public class saveSystem : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            StartCoroutine(Save());
+            Save(0);
+            objectData.GetObjectData.Save(0);
         }
 
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            Save(1);
+            objectData.GetObjectData.Save(1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            Save(2);
+            objectData.GetObjectData.Save(2);
+        }
+    }
+
+    private void LateUpdate() {
         if (PlayerPrefs.GetInt("loadingData") == 1)
         {
-            Debug.Log("Pwetty pwease owo");
-            Load();
+            Load(0);
+            objectData.GetObjectData.Load(0);
+            PlayerPrefs.DeleteKey("loadingData");
         }
 
-        if (Input.GetKeyDown(KeyCode.KeypadEnter) && Application.isEditor)
+        if (PlayerPrefs.GetInt("loadingData") == 2)
         {
-            Load();
+            Load(1);
+            objectData.GetObjectData.Load(1);
+            PlayerPrefs.DeleteKey("loadingData");
+        }
+
+        if (PlayerPrefs.GetInt("loadingData") == 3)
+        {
+            Load(2);
+            objectData.GetObjectData.Load(2);
+            PlayerPrefs.DeleteKey("loadingData");
         }
     }
 
@@ -231,26 +256,6 @@ public class saveSystem : MonoBehaviour
             result[i] = (j < 0) ? result[i] : mix[(j + 39) % 78];
         }
         return new string(result);
-    }
-
-    void enemySave()
-    {
-        enemyWander[] enemiesAndObstacles = FindObjectsOfType<enemyWander>();
-
-        foreach (enemyWander item in enemiesAndObstacles)
-        {
-            item.Save();
-        }
-    }
-
-    void enemyLoad()
-    {
-        enemyWander[] enemiesAndObstacles = FindObjectsOfType<enemyWander>();
-
-        foreach (enemyWander item in enemiesAndObstacles)
-        {
-            item.Load();
-        }
     }
 }
 

@@ -41,15 +41,13 @@ public class cameraMovement : MonoBehaviour
 
             //-12.74
             //-25.2
-            if (Gamepad.current == null)
-            {
-                if (Keyboard.current.eKey.IsPressed(1))
+                if (Input.GetKey(KeyCode.E))
                 {
                     turningCamera = true;
                     DOVirtual.Float(transposer.m_XAxis.Value, transposer.m_XAxis.Value + cameraStep, time, SetCameraAxis).SetEase(Ease.OutSine);
                 }
                 else { turningCamera = false; }
-                if (Keyboard.current.qKey.IsPressed(1))
+                if (Input.GetKey(KeyCode.Q))
                 {
                     turningCamera = true;
                     DOVirtual.Float(transposer.m_XAxis.Value, transposer.m_XAxis.Value - cameraStep, time, SetCameraAxis).SetEase(Ease.OutSine);
@@ -61,28 +59,6 @@ public class cameraMovement : MonoBehaviour
                     DOVirtual.Float(transposer.m_XAxis.Value, transposer.m_XAxis.Value = 0, recenterTime, SetCameraAxis).SetEase(Ease.OutSine);
                 }
                 else { turningCamera = false; }
-            }
-            else
-            {
-                if (Gamepad.current.rightShoulder.IsPressed(1))
-                {
-                    turningCamera = true;
-                    DOVirtual.Float(transposer.m_XAxis.Value, transposer.m_XAxis.Value + cameraStep, time, SetCameraAxis).SetEase(Ease.OutSine);
-                }
-                else { turningCamera = false; }
-                if (Gamepad.current.leftShoulder.IsPressed(1))
-                {
-                    turningCamera = true;
-                    DOVirtual.Float(transposer.m_XAxis.Value, transposer.m_XAxis.Value - cameraStep, time, SetCameraAxis).SetEase(Ease.OutSine);
-                }
-                else { turningCamera = false; }
-                if (Gamepad.current.dpad.down.wasPressedThisFrame && transposer.m_XAxis.Value != playerMovement.rotationy)
-                {
-                    turningCamera = true;
-                    DOVirtual.Float(transposer.m_XAxis.Value, transposer.m_XAxis.Value = 0, recenterTime, SetCameraAxis).SetEase(Ease.OutSine);
-                }
-                else { turningCamera = false; }
-            }
 
         }
 

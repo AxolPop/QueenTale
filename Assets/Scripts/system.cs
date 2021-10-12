@@ -12,20 +12,39 @@ public class system : MonoBehaviour
         Application.targetFrameRate = 60;      
     }
 
+    public GameObject pauseMenu;
+    public GameObject options;
+    public GameObject report;
+    public static bool isPaused;
+    public bool isPaused_;
+
     // Update is called once per frame
     void Update()
     {
         Cursor.visible = true; 
-        
-        if (Input.GetKeyDown(KeyCode.L))
+
+        isPaused_ = isPaused;
+
+        if (isPaused && Input.GetKeyDown(KeyCode.Escape) && SystemInfo.deviceType == DeviceType.Desktop)
         {
-            SceneManager.LoadScene("SampleScene");
+            Debug.Log("Pause");
+            pauseMenu.SetActive(false);
+            options.SetActive(false);
+            report.SetActive(false);
+
+            Time.timeScale = 1;
+
+            isPaused = false;
+        }
+        else if (!isPaused && Input.GetKeyDown(KeyCode.Escape) && SystemInfo.deviceType == DeviceType.Desktop)
+        {
+            pauseMenu.SetActive(true);
+
+            Time.timeScale = 0;
+
+            isPaused = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape) && SystemInfo.deviceType == DeviceType.Desktop)
-        {
-            Application.Quit();
-        }
 
         if (Application.isEditor && Input.GetKeyDown(KeyCode.KeypadPlus))
         {
