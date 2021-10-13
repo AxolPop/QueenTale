@@ -46,6 +46,8 @@ public class enemyWander : MonoBehaviour
 
     public bool canAttack = true;
 
+    public bool isDead;
+
 
     public enum State
     {
@@ -82,7 +84,7 @@ public class enemyWander : MonoBehaviour
 
     Canvas healthShow;
 
-    public bool isDead;
+    public bool isDead_;
     
     // Start is called before the first frame update
 
@@ -100,6 +102,8 @@ public class enemyWander : MonoBehaviour
         {
             objectHole = GetComponent<enemyHole>();
         }
+
+        isDead_ = false;
 
         ai = GetComponent<NavMeshAgent>();
 
@@ -190,11 +194,6 @@ public class enemyWander : MonoBehaviour
             {
                 state = State.attacking;
             }
-            
-            if (beingAttacked == false)
-            {
-                troopToEnemySlots.Clear();
-            }
 
             if (playerDistance < 7f && !isObstacle)
             {
@@ -266,8 +265,9 @@ public class enemyWander : MonoBehaviour
             animator.SetBool("preparing", false);
         }
 
-        if (health < 0 && a == true)
+        if (health < 0.2f && a == true)
         {
+            isDead_ = true;
             StartCoroutine(yourmom());
         }
 

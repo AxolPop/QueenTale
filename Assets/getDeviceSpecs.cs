@@ -3,11 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+public enum specType
+{
+    cpu, gpu, provider
+}
+
 public class getDeviceSpecs : MonoBehaviour
 {
-    public enum specType
-    {
-        cpu, gpu, provider
+    public static getDeviceSpecs specifications;
+
+    void Awake() {
+        specifications = this;
     }
 
     public specType specTypes;

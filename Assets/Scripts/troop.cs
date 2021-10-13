@@ -718,7 +718,6 @@ public class troop : MonoBehaviour
 
     public IEnumerator returnToPlayer()
     {
-        Debug.Log("Returned to player");
         if (troopReturning == false && !wasWandering)
         {
             StopCoroutine(troopFind(0));
@@ -753,8 +752,11 @@ public class troop : MonoBehaviour
 
             if (badguy != null && enemyScript != null)
             {
-                enemyScript.currentTroops--;
                 enemyScript.beingAttacked = false;
+
+                enemyScript.troopToEnemySlots.Remove(gameObject);
+
+                badguy = null;
             }
             ai.radius = 0.1f;
 
@@ -882,7 +884,7 @@ public class troop : MonoBehaviour
         }
         
 
-        while (enemyScript.health > 0 && !troopReturning && badguy != null)
+        while (!enemyScript.isDead_ && !troopReturning && badguy != null)
         {
             while (Vector3.Distance(transform.position, badguy.transform.position) > 2f && !enemyScript.isObstacle && !hasUsedJumpSlots)
             {
@@ -914,7 +916,7 @@ public class troop : MonoBehaviour
             charging = true;
         }
 
-        
+        ai.speed = 0;
 
         if (wasWandering)
         {
@@ -1200,7 +1202,6 @@ public class troop : MonoBehaviour
             }
             else if (state != State.wandering)
             {
-                Debug.Log("awa");
                 StartCoroutine(returnToPlayer());
             }
         }
